@@ -8,7 +8,7 @@
 // 실행: 터미널에서 npm test
 // 확인: P1 은 1 passed, P2 는 9 passed
 // 커밋 메시지: p1: vitest / p2: tests
-
+import { isGoodDay, summarize, reasons } from "./public/logic.js";
 import { test, expect } from "vitest";
 import { toDays } from "./public/logic.js";
 
@@ -26,6 +26,39 @@ const days = toDays(daily);
 // 주어짐: 예시 테스트. 지우지 않습니다.
 test("toDays builds one object per day", () => {
   expect(days[0]).toEqual({ date: "11-21", max: 12.0, wind: 6.2, rain: 10 });
+});
+
+test("good day when rain and wind are below the limits", () => {
+  expect(isGoodDay(days[0], limits)).toBe(true);
+});
+
+test("good day when rain and wind are exactly the limits", () => {
+  expect(isGoodDay(days[1], limits)).toBe(true);
+});
+
+test("rejects a day when only wind exceeds the limit", () => {
+  expect(isGoodDay(days[2], limits)).toBe(false);
+});
+
+test("rejects a day when only rain exceeds the limit", () => {
+  expect(isGoodDay(days[3], limits)).toBe(false);
+});
+
+test("summary includes the number of good days and total days", () => {
+  expect(summarize(days, limits)).toBe("good for a run on 2 of 4 days");
+});
+
+test("summary reports zero good days and zero total days for empty input", () => {
+  expect(summarize([], limits)).toBe("good for a run on 0 of 0 days");
+});
+
+test("reasons lists rain before wind when both exceed the limits", () => {
+  const day = { date: "x", max: 0, rain: 90, wind: 20 };
+  expect(reasons(day, limits)).toEqual(["rain", "wind"]);
+});
+
+test("reasons is empty when rain and wind are exactly the limits", () => {
+  expect(reasons(days[1], limits)).toEqual([]);
 });
 
 // P2: 여기 아래에 테스트를 추가합니다. 위의 import 줄에 필요한 함수 이름도 추가합니다.
